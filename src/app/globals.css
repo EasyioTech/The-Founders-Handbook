@@ -1,0 +1,205 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("https://fonts.gstatic.com/s/fraunces/v31/6NUh8FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0K7iN7hzFUPJH58nBPpQ4.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: "Fraunces", Georgia, serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: #f8faf8;
+  --foreground: #0f1a14;
+  --card: #ffffff;
+  --card-foreground: #0f1a14;
+  --popover: #ffffff;
+  --popover-foreground: #0f1a14;
+  --primary: #166534;
+  --primary-foreground: #f0fdf4;
+  --secondary: #dcfce7;
+  --secondary-foreground: #14532d;
+  --muted: #f0fdf4;
+  --muted-foreground: #4b5563;
+  --accent: #bbf7d0;
+  --accent-foreground: #14532d;
+  --destructive: #dc2626;
+  --border: #d1d5db;
+  --input: #d1d5db;
+  --ring: #166534;
+  --chart-1: #166534;
+  --chart-2: #15803d;
+  --chart-3: #22c55e;
+  --chart-4: #4ade80;
+  --chart-5: #86efac;
+  --sidebar: #0f1a14;
+  --sidebar-foreground: #fafafa;
+  --sidebar-primary: #4ade80;
+  --sidebar-primary-foreground: #0f1a14;
+  --sidebar-accent: #1a2e22;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #1a2e22;
+  --sidebar-ring: #4ade80;
+}
+
+.dark {
+  --background: #0a0f0c;
+  --foreground: #fafafa;
+  --card: #111a15;
+  --card-foreground: #fafafa;
+  --popover: #111a15;
+  --popover-foreground: #fafafa;
+  --primary: #4ade80;
+  --primary-foreground: #0f1a14;
+  --secondary: #1a2e22;
+  --secondary-foreground: #fafafa;
+  --muted: #1a2e22;
+  --muted-foreground: #9ca3af;
+  --accent: #14532d;
+  --accent-foreground: #dcfce7;
+  --destructive: #dc2626;
+  --border: #1a2e22;
+  --input: #1a2e22;
+  --ring: #4ade80;
+  --chart-1: #4ade80;
+  --chart-2: #22c55e;
+  --chart-3: #86efac;
+  --chart-4: #bbf7d0;
+  --chart-5: #dcfce7;
+  --sidebar: #070a08;
+  --sidebar-foreground: #fafafa;
+  --sidebar-primary: #4ade80;
+  --sidebar-primary-foreground: #0f1a14;
+  --sidebar-accent: #111a15;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #1a2e22;
+  --sidebar-ring: #4ade80;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+.formula-box {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #86efac;
+}
+
+.dark .formula-box {
+  background: linear-gradient(135deg, #1a2e22 0%, #14532d 100%);
+  border: 1px solid #166534;
+}
+
+.glossary-term {
+  cursor: help;
+  border-bottom: 1px dashed #15803d;
+}
+
+.glossary-term:hover {
+  border-bottom-color: #22c55e;
+}
+
+.dark .glossary-term {
+  border-bottom-color: #4ade80;
+}
+
+.dark .glossary-term:hover {
+  border-bottom-color: #86efac;
+}
+
+.nav-glow {
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+  transition: left 0.5s ease;
+}
+
+.card-shine:hover::before {
+  left: 100%;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.pulse-ring::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 2px solid currentColor;
+  animation: pulse-ring 2s ease-out infinite;
+}
