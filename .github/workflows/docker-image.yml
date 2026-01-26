@@ -65,7 +65,7 @@ jobs:
           docker run -d \
             --name founders-handbook \
             --restart unless-stopped \
-            -p 5678:3000 \
+            -p 3002:3000 \
             -e NODE_ENV=production \
             -e NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL || 'http://72.61.243.152:5678' }} \
             ${{ secrets.DOCKER_HUB_USERNAME }}/founders-handbook:latest
