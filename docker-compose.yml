@@ -9,7 +9,7 @@ services:
     container_name: founders-handbook
     restart: unless-stopped
     ports:
-      - "5678:3000"
+      - "5678:3001"
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://72.61.243.152:5678}

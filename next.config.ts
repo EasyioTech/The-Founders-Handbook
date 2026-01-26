@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  outputFileTracingRoot: path.resolve(process.cwd(), '../../'),
+
 
   devIndicators: {
     buildActivity: false,
