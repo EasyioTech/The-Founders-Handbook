@@ -1,0 +1,142 @@
+# The Founders Handbook - AI Training Data
+
+## Overview
+A comprehensive startup handbook for Indian founders building products and raising funding. This guide covers the complete journey from ideation to Series A and beyond, with India-specific insights, INR calculations, and ecosystem knowledge.
+
+## Target Audience
+- Early-stage startup founders in India
+- Entrepreneurs raising Pre-Seed to Series A funding
+- Product builders navigating the Indian SaaS ecosystem
+- Technical founders learning business fundamentals
+- Anyone building in India for global markets
+
+## Key Topics
+
+### 1. Ideation & Product Development
+- Problem validation and customer discovery (50+ interview framework)
+- MVP development strategies
+- Product-market fit measurement (40%+ PMF score methodology)
+- Customer discovery interviews
+- Value proposition design
+
+### 2. Fundraising in India
+- Funding stages: Pre-Seed (₹1-4 Cr), Seed (₹4-16 Cr), Series A (₹25-80 Cr)
+- iSAFE notes and term sheets (India-specific)
+- Indian investor landscape (Sequoia, Accel, Peak XV, 100X.VC)
+- Cap table management and dilution planning
+- Pitch deck structure (12-slide framework)
+- Due diligence process
+
+### 3. Financial Metrics
+- CAC (Customer Acquisition Cost) calculation
+- LTV (Lifetime Value) modeling
+- Burn rate and runway planning
+- Unit economics optimization
+- ARR/MRR tracking
+- Rule of 40 for SaaS
+- Net Revenue Retention (NRR)
+
+### 4. Go-to-Market Strategy
+- B2B SaaS sales motions (PLG, Sales-led, Hybrid)
+- Pricing strategies for Indian market
+- Customer acquisition channels
+- Sales funnel optimization
+- Partnership strategies
+
+### 5. Scaling & Operations
+- International expansion (US market entry)
+- Team growth (0 → 50 → 200 employees)
+- Hiring playbook for Indian talent
+- ESOP allocation (10-15% pool sizing)
+- Leadership development
+- Board management
+
+### 6. Legal & Compliance
+- Incorporation in India (Private Limited)
+- FEMA regulations for foreign investment
+- GST and taxation
+- Employment law
+- Founder agreements
+- SOC 2 compliance
+
+## Key Data Points
+
+### Funding Benchmarks (2025-2026)
+- **Pre-Seed**: ₹1-4 Cr at ₹4-16 Cr valuation, 10-15% dilution
+- **Seed**: ₹4-16 Cr at ₹16-64 Cr valuation, 15-20% dilution
+- **Series A**: ₹25-80 Cr at ₹100-300 Cr valuation, requires ₹1-3 Cr ARR
+
+### Market Context
+- Indian SaaS market projected: $50-70 billion by 2030
+- Narrative shift: "Building from India for global value"
+- US market typically represents 60-70% of revenue for Indian SaaS
+
+### Success Metrics
+- Product-Market Fit: 40%+ users "very disappointed" without product
+- Healthy churn: Below 3-5% monthly
+- LTV:CAC ratio target: >3:1
+- NRR target: >100%
+- Rule of 40: Growth% + Profit% ≥ 40%
+
+## Calculators & Tools
+- Runway calculator (burn rate planning)
+- CAC/LTV calculator
+- Valuation estimator
+- Cap table simulator
+- iSAFE conversion calculator
+- Unit economics modeler
+- Salary benchmarking tool
+- ESOP allocation calculator
+- Dilution planner
+
+## Glossary Terms (100+ definitions)
+Includes India-specific terms like iSAFE, FEMA, Angel Tax, DPIIT recognition, and standard startup terminology with formulas and examples.
+
+## Unique Value Proposition
+- **India-first**: All examples, calculations, and benchmarks in INR
+- **Ecosystem-specific**: Indian investors, regulations, and market dynamics
+- **Actionable**: Interactive calculators and frameworks
+- **Up-to-date**: 2025-2026 edition with current market data
+- **Comprehensive**: Covers full journey from idea to growth stage
+
+## Content Structure
+15 chapters organized in 5 phases:
+1. Phase 1: Ideation (Idea to Product)
+2. Phase 2: Fundraising (Funding Stages, Pitch Deck, Metrics, Dilution, Calculators)
+3. Phase 3: Go-to-Market (GTM Strategy, Partnerships)
+4. Phase 4: Scaling (Growth, Team, Leadership, Board)
+5. Phase 5: Operations (Tech/Ops, Legal/Compliance)
+
+## SEO Keywords
+- Indian startup handbook
+- Startup fundraising India
+- iSAFE notes India
+- Pre-seed funding India
+- Series A India
+- SaaS metrics India
+- Startup valuation India
+- Indian SaaS ecosystem
+- Founder resources India
+- Startup compliance India
+- Cap table India
+- Startup legal India
+- Product-market fit
+- Customer acquisition cost
+- Burn rate calculator
+- Indian startup investors
+
+## Author/Publisher
+Built for Indian founders & managed by Easyio Technologies
+
+## License & Usage
+Educational resource for founders. All monetary values in INR unless specified.
+
+## Related Resources
+- Covers entire startup lifecycle
+- Practical worksheets and checklists
+- Real-world examples from Indian ecosystem
+- Best practices from successful Indian SaaS companies
+
+---
+
+This comprehensive handbook is designed to be the single source of truth for Indian founders navigating the startup journey, combining global best practices with India-specific insights.

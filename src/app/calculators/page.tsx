@@ -5,6 +5,28 @@ import { HandbookLayout } from "@/components/handbook/HandbookLayout";
 import { Callout } from "@/components/handbook/UIComponents";
 import { LineChart, BarChart } from "@/components/handbook/Charts";
 import Link from "next/link";
+import { Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+function InfoTooltip({ content }: { content: string }) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Info className="h-4 w-4 text-muted-foreground/70 hover:text-foreground cursor-help transition-colors" />
+        </TooltipTrigger>
+        <TooltipContent className="max-w-[300px] text-sm">
+          <p>{content}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 const formatINR = (value: number, compact = false) => {
   if (compact) {
@@ -24,12 +46,12 @@ function RunwayCalculator() {
   const results = useMemo(() => {
     const netBurn = monthlyExpenses - monthlyRevenue;
     const simpleRunway = netBurn > 0 ? Math.floor(cashBalance / netBurn) : Infinity;
-    
+
     let cash = cashBalance;
     let revenue = monthlyRevenue;
     let months = 0;
     const projections = [];
-    
+
     while (cash > 0 && months < 36) {
       projections.push({ x: `M${months}`, y: Math.round(cash) });
       const burn = monthlyExpenses - revenue;
@@ -37,7 +59,7 @@ function RunwayCalculator() {
       revenue *= (1 + revenueGrowth / 100);
       months++;
     }
-    
+
     return {
       netBurn,
       simpleRunway,
@@ -50,12 +72,13 @@ function RunwayCalculator() {
   return (
     <div className="bg-card rounded-xl border border-border p-6">
       <h3 className="font-semibold text-foreground mb-6">Runway Calculator</h3>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Cash Balance: {formatINR(cashBalance, true)}
+              <InfoTooltip content="Total liquid cash currently available in the bank." />
             </label>
             <input
               type="range"
@@ -67,10 +90,11 @@ function RunwayCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Monthly Revenue: {formatINR(monthlyRevenue, true)}
+              <InfoTooltip content="Total revenue earned per month (MRR) from all sources." />
             </label>
             <input
               type="range"
@@ -82,10 +106,11 @@ function RunwayCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Monthly Expenses: {formatINR(monthlyExpenses, true)}
+              <InfoTooltip content="Total monthly cash outflow (salaries, rent, software, etc.)." />
             </label>
             <input
               type="range"
@@ -97,7 +122,7 @@ function RunwayCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Monthly Revenue Growth: {revenueGrowth}%
@@ -113,15 +138,21 @@ function RunwayCalculator() {
             />
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-secondary rounded-lg">
-              <div className="text-sm text-muted-foreground">Gross Burn</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                Gross Burn
+                <InfoTooltip content="Total money spent each month before accounting for revenue." />
+              </div>
               <div className="text-xl font-display text-foreground">{formatINR(results.grossBurn, true)}</div>
             </div>
             <div className="p-4 bg-secondary rounded-lg">
-              <div className="text-sm text-muted-foreground">Net Burn</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                Net Burn
+                <InfoTooltip content="Monthly Cash Burn = Expenses - Revenue. This is how much cash you lose each month." />
+              </div>
               <div className="text-xl font-display text-foreground">{formatINR(results.netBurn, true)}</div>
             </div>
             <div className="p-4 bg-secondary rounded-lg">
@@ -137,7 +168,7 @@ function RunwayCalculator() {
               </div>
             </div>
           </div>
-          
+
           {results.simpleRunway < 6 && results.simpleRunway !== Infinity && (
             <div className="p-3 bg-destructive/10 rounded-lg text-sm text-destructive">
               Warning: Less than 6 months runway. Consider fundraising immediately.
@@ -145,9 +176,9 @@ function RunwayCalculator() {
           )}
         </div>
       </div>
-      
+
       <div className="mt-6">
-        <LineChart 
+        <LineChart
           data={results.projections}
           title="Cash Projection Over Time"
           height={180}
@@ -198,12 +229,13 @@ function CACLTVCalculator() {
   return (
     <div className="bg-card rounded-xl border border-border p-6">
       <h3 className="font-semibold text-foreground mb-6">CAC / LTV Calculator</h3>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Monthly S&M Spend: {formatINR(marketingSpend, true)}
+              <InfoTooltip content="Total Sales & Marketing spend including ads, tools, and team salaries." />
             </label>
             <input
               type="range"
@@ -215,10 +247,11 @@ function CACLTVCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               New Customers This Month: {newCustomers}
+              <InfoTooltip content="Count of new paying customers acquired in the month." />
             </label>
             <input
               type="range"
@@ -230,10 +263,11 @@ function CACLTVCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               ARPU (Monthly): {formatINR(arpu)}
+              <InfoTooltip content="Average Revenue Per User per month." />
             </label>
             <input
               type="range"
@@ -245,10 +279,11 @@ function CACLTVCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Monthly Churn Rate: {churnRate}%
+              <InfoTooltip content="Percentage of customers who cancel their subscription each month." />
             </label>
             <input
               type="range"
@@ -260,7 +295,7 @@ function CACLTVCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Gross Margin: {grossMargin}%
@@ -276,29 +311,44 @@ function CACLTVCalculator() {
             />
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-secondary rounded-lg">
-              <div className="text-sm text-muted-foreground">CAC</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                CAC
+                <InfoTooltip content="Customer Acquisition Cost: Cost to acquire a single paying customer." />
+              </div>
               <div className="text-xl font-display text-foreground">{formatINR(results.cac)}</div>
             </div>
             <div className="p-4 bg-secondary rounded-lg">
-              <div className="text-sm text-muted-foreground">Avg Lifespan</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                Avg Lifespan
+                <InfoTooltip content="Estimated months a customer stays before churning (1 / Churn Rate)." />
+              </div>
               <div className="text-xl font-display text-foreground">{results.lifespanMonths.toFixed(0)} mo</div>
             </div>
             <div className="p-4 bg-secondary rounded-lg">
-              <div className="text-sm text-muted-foreground">Basic LTV</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                Basic LTV
+                <InfoTooltip content="Lifetime Value: Total revenue expected from a customer (ARPU × Lifespan)." />
+              </div>
               <div className="text-xl font-display text-foreground">{formatINR(results.basicLtv, true)}</div>
             </div>
             <div className="p-4 bg-secondary rounded-lg">
-              <div className="text-sm text-muted-foreground">GM-Adjusted LTV</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                GM-Adjusted LTV
+                <InfoTooltip content="LTV adjusted for gross margin (Real profit per customer)." />
+              </div>
               <div className="text-xl font-display text-foreground">{formatINR(results.grossMarginLtv, true)}</div>
             </div>
           </div>
-          
+
           <div className="p-4 bg-primary/5 rounded-lg">
-            <div className="text-sm text-muted-foreground">LTV:CAC Ratio</div>
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              LTV:CAC Ratio
+              <InfoTooltip content="The golden metric of unit economics. 3:1 or higher is considered healthy for SaaS." />
+            </div>
             <div className={`text-3xl font-display ${getRatioColor(results.ltvCacRatio)}`}>
               {results.ltvCacRatio.toFixed(1)}:1
             </div>
@@ -306,9 +356,12 @@ function CACLTVCalculator() {
               {getRatioLabel(results.ltvCacRatio)}
             </div>
           </div>
-          
+
           <div className="p-4 bg-secondary rounded-lg">
-            <div className="text-sm text-muted-foreground">CAC Payback Period</div>
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              CAC Payback Period
+              <InfoTooltip content="Time required to earn back the cost of acquiring a customer." />
+            </div>
             <div className="text-xl font-display text-foreground">{results.paybackMonths.toFixed(1)} months</div>
           </div>
         </div>
@@ -326,35 +379,35 @@ function SaaSPricingCalculator() {
 
   const results = useMemo(() => {
     const costPlusPrice = baseCost / (1 - targetMargin / 100);
-    
+
     const segmentMultipliers = {
       smb: { low: 0.5, mid: 0.75, high: 1 },
       mid: { low: 1, mid: 1.5, high: 2.5 },
       enterprise: { low: 2, mid: 4, high: 8 },
     };
-    
+
     const mult = segmentMultipliers[marketSegment];
     const valuePriceRange = {
       low: baseCost * valueMultiple * mult.low,
       mid: baseCost * valueMultiple * mult.mid,
       high: baseCost * valueMultiple * mult.high,
     };
-    
+
     const competitorPriceRange = {
       low: competitorPrice * 0.7,
       mid: competitorPrice * 0.9,
       premium: competitorPrice * 1.2,
     };
-    
+
     const recommendedPrice = Math.max(
       costPlusPrice,
       (valuePriceRange.low + valuePriceRange.mid) / 2,
       competitorPriceRange.low
     );
-    
+
     const annualPrice = recommendedPrice * 12;
     const annualDiscount = annualPrice * 0.83;
-    
+
     return {
       costPlusPrice,
       valuePriceRange,
@@ -377,12 +430,13 @@ function SaaSPricingCalculator() {
   return (
     <div className="bg-card rounded-xl border border-border p-6">
       <h3 className="font-semibold text-foreground mb-6">SaaS Pricing Calculator</h3>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Cost to Serve (Monthly): {formatINR(baseCost)}
+              <InfoTooltip content="Variable costs per customer (server, support, third-party APIs)." />
             </label>
             <input
               type="range"
@@ -395,10 +449,11 @@ function SaaSPricingCalculator() {
             />
             <div className="text-xs text-muted-foreground mt-1">Infrastructure, support, success costs per customer</div>
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Target Gross Margin: {targetMargin}%
+              <InfoTooltip content="Percentage of revenue retained after Cost of Goods Sold (COGS)." />
             </label>
             <input
               type="range"
@@ -411,7 +466,7 @@ function SaaSPricingCalculator() {
             />
             <div className="text-xs text-muted-foreground mt-1">SaaS benchmark: 75-85%</div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Market Segment
@@ -421,18 +476,17 @@ function SaaSPricingCalculator() {
                 <button
                   key={seg}
                   onClick={() => setMarketSegment(seg)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    marketSegment === seg 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-secondary text-muted-foreground hover:bg-secondary/80"
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${marketSegment === seg
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                    }`}
                 >
                   {seg === "smb" ? "SMB" : seg === "mid" ? "Mid-Market" : "Enterprise"}
                 </button>
               ))}
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Competitor Price (Monthly): {formatINR(competitorPrice)}
@@ -447,10 +501,11 @@ function SaaSPricingCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Value Multiplier: {valueMultiple}x
+              <InfoTooltip content="ROI multiplier for the customer. If you save them ₹100, charging ₹20 (5x value) is reasonable." />
             </label>
             <input
               type="range"
@@ -464,7 +519,7 @@ function SaaSPricingCalculator() {
             <div className="text-xs text-muted-foreground mt-1">How much value you deliver vs cost (typical: 3-5x)</div>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="p-4 bg-primary/5 rounded-lg">
             <div className="text-sm text-muted-foreground">Recommended Monthly Price</div>
@@ -475,7 +530,7 @@ function SaaSPricingCalculator() {
               {results.grossMargin.toFixed(0)}% gross margin
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-secondary rounded-lg">
               <div className="text-sm text-muted-foreground">Annual (Full)</div>
@@ -486,7 +541,7 @@ function SaaSPricingCalculator() {
               <div className="text-xl font-display text-foreground">{formatINR(results.annualDiscount)}</div>
             </div>
           </div>
-          
+
           <div className="p-4 bg-secondary rounded-lg">
             <div className="text-sm text-muted-foreground mb-2">Price Anchors</div>
             <div className="space-y-2 text-sm">
@@ -508,9 +563,9 @@ function SaaSPricingCalculator() {
           </div>
         </div>
       </div>
-      
+
       <div className="mt-6">
-        <BarChart 
+        <BarChart
           data={pricingData}
           title="Price Comparison"
           height={160}
@@ -533,7 +588,7 @@ function PricingTierCalculator() {
       features: ["Core features", "+ Analytics", "+ Automation", "+ API Access", "+ Custom"],
       seats: ["1-3 seats", "4-10 seats", "11-25 seats", "26-100 seats", "Unlimited"],
     };
-    
+
     const result = [];
     for (let i = 0; i < tierCount; i++) {
       const multiplier = Math.pow(tierMultiple, i);
@@ -556,7 +611,7 @@ function PricingTierCalculator() {
   return (
     <div className="bg-card rounded-xl border border-border p-6">
       <h3 className="font-semibold text-foreground mb-6">Pricing Tier Calculator</h3>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
@@ -573,10 +628,11 @@ function PricingTierCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Number of Tiers: {tierCount}
+              <InfoTooltip content="How many pricing plans to offer (e.g., Starter, Pro, Enterprise)." />
             </label>
             <input
               type="range"
@@ -588,7 +644,7 @@ function PricingTierCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Tier Price Multiple: {tierMultiple}x
@@ -604,7 +660,7 @@ function PricingTierCalculator() {
             />
             <div className="text-xs text-muted-foreground mt-1">Each tier costs Nx the previous (typical: 2-3x)</div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Tier Differentiation
@@ -614,11 +670,10 @@ function PricingTierCalculator() {
                 <button
                   key={type}
                   onClick={() => setFeatureGating(type)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    featureGating === type 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-secondary text-muted-foreground hover:bg-secondary/80"
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${featureGating === type
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                    }`}
                 >
                   {type === "usage" ? "Usage-Based" : type === "features" ? "Feature-Based" : "Seat-Based"}
                 </button>
@@ -626,10 +681,13 @@ function PricingTierCalculator() {
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="p-4 bg-primary/5 rounded-lg">
-            <div className="text-sm text-muted-foreground">Estimated Blended ARPU</div>
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              Estimated Blended ARPU
+              <InfoTooltip content="Weighted average revenue per user based on expected tier distribution." />
+            </div>
             <div className="text-3xl font-display text-primary">
               {formatINR(Math.round(avgRevenue))}/mo
             </div>
@@ -637,11 +695,11 @@ function PricingTierCalculator() {
               Based on typical tier distribution (40% / 35% / 15% / 7% / 3%)
             </div>
           </div>
-          
+
           <div className="grid gap-3">
             {tiers.map((tier, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`p-4 rounded-lg ${tier.popular ? 'bg-primary/10 border border-primary/30' : 'bg-secondary'}`}
               >
                 <div className="flex justify-between items-center">
@@ -674,10 +732,10 @@ function ValuationCalculator() {
       seriesA: { low: 10, mid: 20, high: 35 },
       seriesB: { low: 8, mid: 15, high: 25 },
     };
-    
+
     const growthMultiplier = growthRate >= 100 ? 1.3 : growthRate >= 50 ? 1.1 : 0.9;
     const baseMultiples = multiples[stage];
-    
+
     return {
       low: arr * baseMultiples.low * growthMultiplier,
       mid: arr * baseMultiples.mid * growthMultiplier,
@@ -689,12 +747,13 @@ function ValuationCalculator() {
   return (
     <div className="bg-card rounded-xl border border-border p-6">
       <h3 className="font-semibold text-foreground mb-6">Valuation Estimator</h3>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               ARR: {formatINR(arr, true)}
+              <InfoTooltip content="Annual Recurring Revenue = Monthly Recurring Revenue (MRR) × 12." />
             </label>
             <input
               type="range"
@@ -706,7 +765,7 @@ function ValuationCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               YoY Growth Rate: {growthRate}%
@@ -721,7 +780,7 @@ function ValuationCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Stage
@@ -731,11 +790,10 @@ function ValuationCalculator() {
                 <button
                   key={s}
                   onClick={() => setStage(s)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    stage === s 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-secondary text-muted-foreground hover:bg-secondary/80"
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${stage === s
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                    }`}
                 >
                   {s === "seed" ? "Seed" : s === "seriesA" ? "Series A" : "Series B"}
                 </button>
@@ -743,7 +801,7 @@ function ValuationCalculator() {
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="p-4 bg-primary/5 rounded-lg">
             <div className="text-sm text-muted-foreground mb-2">Estimated Valuation Range</div>
@@ -754,14 +812,14 @@ function ValuationCalculator() {
               Range: {formatINR(results.low, true)} - {formatINR(results.high, true)}
             </div>
           </div>
-          
+
           <div className="p-4 bg-secondary rounded-lg">
             <div className="text-sm text-muted-foreground">ARR Multiple</div>
             <div className="text-xl font-display text-foreground">{results.multiple.toFixed(1)}x</div>
           </div>
-          
+
           <div className="text-xs text-muted-foreground">
-            Note: This is a rough estimate based on typical Indian SaaS multiples. 
+            Note: This is a rough estimate based on typical Indian SaaS multiples.
             Actual valuations depend on market conditions, team, competition, and investor appetite.
           </div>
         </div>
@@ -779,14 +837,14 @@ function MRRProjectionCalculator() {
   const projections = useMemo(() => {
     const data = [];
     let mrr = currentMrr;
-    
+
     for (let i = 0; i <= months; i++) {
       data.push({ x: `M${i}`, y: Math.round(mrr) });
       const newMrr = mrr * (growthRate / 100);
       const churnedMrr = mrr * (churnRate / 100);
       mrr = mrr + newMrr - churnedMrr;
     }
-    
+
     return {
       data,
       finalMrr: data[data.length - 1]?.y || 0,
@@ -798,12 +856,13 @@ function MRRProjectionCalculator() {
   return (
     <div className="bg-card rounded-xl border border-border p-6">
       <h3 className="font-semibold text-foreground mb-6">MRR Projection Calculator</h3>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Current MRR: {formatINR(currentMrr, true)}
+              <InfoTooltip content="Current Monthly Recurring Revenue." />
             </label>
             <input
               type="range"
@@ -815,10 +874,11 @@ function MRRProjectionCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Monthly New MRR Growth: {growthRate}%
+              <InfoTooltip content="Month-over-month percentage growth in new revenue." />
             </label>
             <input
               type="range"
@@ -830,10 +890,11 @@ function MRRProjectionCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Monthly Churn Rate: {churnRate}%
+              <InfoTooltip content="Percentage of revenue lost to cancellations each month." />
             </label>
             <input
               type="range"
@@ -845,7 +906,7 @@ function MRRProjectionCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Projection Period: {months} months
@@ -861,21 +922,27 @@ function MRRProjectionCalculator() {
             />
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-secondary rounded-lg">
-              <div className="text-sm text-muted-foreground">Net Growth</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                Net Growth
+                <InfoTooltip content="Net MRR Growth = New Growth - Churn." />
+              </div>
               <div className="text-xl font-display text-foreground">{(growthRate - churnRate).toFixed(1)}%</div>
             </div>
             <div className="p-4 bg-secondary rounded-lg">
-              <div className="text-sm text-muted-foreground">Quick Ratio</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                Quick Ratio
+                <InfoTooltip content="Growth Rate / Churn Rate. Measures how efficiently you are growing relative to churn." />
+              </div>
               <div className="text-xl font-display text-foreground">
                 {churnRate > 0 ? (growthRate / churnRate).toFixed(1) : "∞"}
               </div>
             </div>
           </div>
-          
+
           <div className="p-4 bg-primary/5 rounded-lg">
             <div className="text-sm text-muted-foreground">Projected MRR (Month {months})</div>
             <div className="text-3xl font-display text-primary">
@@ -887,9 +954,9 @@ function MRRProjectionCalculator() {
           </div>
         </div>
       </div>
-      
+
       <div className="mt-6">
-        <LineChart 
+        <LineChart
           data={projections.data}
           title="MRR Projection"
           height={180}
@@ -908,7 +975,7 @@ function FundraisingCalculator() {
     const amountNeeded = monthlyBurn * targetRunway;
     const impliedPreMoney = (amountNeeded / (expectedDilution / 100)) - amountNeeded;
     const postMoney = impliedPreMoney + amountNeeded;
-    
+
     return {
       amountNeeded,
       impliedPreMoney,
@@ -919,7 +986,7 @@ function FundraisingCalculator() {
   return (
     <div className="bg-card rounded-xl border border-border p-6">
       <h3 className="font-semibold text-foreground mb-6">Fundraising Calculator</h3>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
@@ -936,7 +1003,7 @@ function FundraisingCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Target Runway: {targetRunway} months
@@ -951,7 +1018,7 @@ function FundraisingCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Expected Dilution: {expectedDilution}%
@@ -967,7 +1034,7 @@ function FundraisingCalculator() {
             />
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="p-4 bg-primary/5 rounded-lg">
             <div className="text-sm text-muted-foreground">Amount to Raise</div>
@@ -975,7 +1042,7 @@ function FundraisingCalculator() {
               {formatINR(results.amountNeeded, true)}
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-secondary rounded-lg">
               <div className="text-sm text-muted-foreground">Implied Pre-Money</div>
@@ -984,7 +1051,10 @@ function FundraisingCalculator() {
               </div>
             </div>
             <div className="p-4 bg-secondary rounded-lg">
-              <div className="text-sm text-muted-foreground">Post-Money</div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                Post-Money
+                <InfoTooltip content="Valuation immediately after the investment (Pre-Money + Investment)." />
+              </div>
               <div className="text-xl font-display text-foreground">
                 {formatINR(results.postMoney, true)}
               </div>
@@ -1003,7 +1073,7 @@ function BurnMultipleCalculator() {
   const results = useMemo(() => {
     const burnMultiple = newArr > 0 ? (netBurn * 12) / (newArr * 12) : 0;
     const efficiency = burnMultiple > 0 ? (1 / burnMultiple) * 100 : 0;
-    
+
     let rating: string;
     let ratingColor: string;
     if (burnMultiple <= 1) {
@@ -1022,7 +1092,7 @@ function BurnMultipleCalculator() {
       rating = "Inefficient";
       ratingColor = "text-destructive";
     }
-    
+
     return {
       burnMultiple,
       efficiency,
@@ -1036,12 +1106,13 @@ function BurnMultipleCalculator() {
   return (
     <div className="bg-card rounded-xl border border-border p-6">
       <h3 className="font-semibold text-foreground mb-6">Burn Multiple Calculator</h3>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Monthly Net Burn: {formatINR(netBurn, true)}
+              <InfoTooltip content="Cash lost per month after revenue." />
             </label>
             <input
               type="range"
@@ -1053,10 +1124,11 @@ function BurnMultipleCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Monthly Net New ARR: {formatINR(newArr, true)}
+              <InfoTooltip content="New ARR gained minus churned ARR in the month." />
             </label>
             <input
               type="range"
@@ -1069,7 +1141,7 @@ function BurnMultipleCalculator() {
             />
             <div className="text-xs text-muted-foreground mt-1">New + Expansion - Contraction - Churn</div>
           </div>
-          
+
           <div className="formula-box p-4 rounded-lg">
             <div className="text-sm font-medium text-foreground mb-2">Formula</div>
             <div className="text-sm text-muted-foreground font-mono">
@@ -1077,16 +1149,19 @@ function BurnMultipleCalculator() {
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="p-4 bg-primary/5 rounded-lg">
-            <div className="text-sm text-muted-foreground">Burn Multiple</div>
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              Burn Multiple
+              <InfoTooltip content="How much cash you burn to generate ₹1 of new ARR. Lower is better." />
+            </div>
             <div className={`text-3xl font-display ${results.ratingColor}`}>
               {results.burnMultiple.toFixed(2)}x
             </div>
             <div className={`text-sm ${results.ratingColor}`}>{results.rating}</div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-secondary rounded-lg">
               <div className="text-sm text-muted-foreground">Annual Burn</div>
@@ -1097,7 +1172,7 @@ function BurnMultipleCalculator() {
               <div className="text-xl font-display text-foreground">{formatINR(results.annualNewArr, true)}</div>
             </div>
           </div>
-          
+
           <div className="p-4 bg-secondary rounded-lg">
             <div className="text-sm text-muted-foreground mb-2">Benchmarks (2025)</div>
             <div className="space-y-1 text-xs">
@@ -1126,20 +1201,20 @@ function UnitEconomicsCalculator() {
     const cac = cacMarketing + cacSales;
     const monthlyGrossProfit = monthlyPrice * (grossMargin / 100);
     const basicLtv = monthlyPrice * avgLifespan;
-    
+
     let ltv = 0;
     let monthlyRevenue = monthlyPrice;
     for (let i = 0; i < avgLifespan; i++) {
       ltv += monthlyRevenue;
       monthlyRevenue *= (1 + expansionRate / 100);
     }
-    
+
     const ltvWithExpansion = ltv;
     const grossMarginLtv = ltvWithExpansion * (grossMargin / 100);
     const ltvCacRatio = cac > 0 ? grossMarginLtv / cac : 0;
     const paybackMonths = monthlyGrossProfit > 0 ? cac / monthlyGrossProfit : 0;
     const roi = cac > 0 ? ((grossMarginLtv - cac) / cac) * 100 : 0;
-    
+
     return {
       cac,
       basicLtv,
@@ -1155,7 +1230,7 @@ function UnitEconomicsCalculator() {
   return (
     <div className="bg-card rounded-xl border border-border p-6">
       <h3 className="font-semibold text-foreground mb-6">Unit Economics Calculator</h3>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
@@ -1172,7 +1247,7 @@ function UnitEconomicsCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Gross Margin: {grossMargin}%
@@ -1187,7 +1262,7 @@ function UnitEconomicsCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Marketing CAC: {formatINR(cacMarketing)}
@@ -1202,7 +1277,7 @@ function UnitEconomicsCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Sales CAC: {formatINR(cacSales)}
@@ -1217,7 +1292,7 @@ function UnitEconomicsCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Avg Customer Lifespan: {avgLifespan} months
@@ -1232,10 +1307,11 @@ function UnitEconomicsCalculator() {
               className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
               Monthly Expansion Rate: {expansionRate}%
+              <InfoTooltip content="Percentage increase in revenue from existing customers (upsells/cross-sells)." />
             </label>
             <input
               type="range"
@@ -1248,7 +1324,7 @@ function UnitEconomicsCalculator() {
             />
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-secondary rounded-lg">
@@ -1268,7 +1344,7 @@ function UnitEconomicsCalculator() {
               <div className="text-xl font-display text-foreground">{formatINR(results.grossMarginLtv, true)}</div>
             </div>
           </div>
-          
+
           <div className="p-4 bg-primary/5 rounded-lg">
             <div className="text-sm text-muted-foreground">LTV:CAC Ratio</div>
             <div className={`text-3xl font-display ${results.ltvCacRatio >= 3 ? "text-primary" : results.ltvCacRatio >= 1 ? "text-chart-3" : "text-destructive"}`}>
@@ -1278,7 +1354,7 @@ function UnitEconomicsCalculator() {
               {results.ltvCacRatio >= 3 ? "Healthy" : results.ltvCacRatio >= 1 ? "Needs work" : "Unprofitable"}
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-secondary rounded-lg">
               <div className="text-sm text-muted-foreground">Payback Period</div>
@@ -1297,6 +1373,258 @@ function UnitEconomicsCalculator() {
   );
 }
 
+
+function PreSeedValuationCalculator() {
+  // Berkus Method-inspired simplified calculator
+  const [factors, setFactors] = useState({
+    team: 0,
+    market: 0,
+    product: 0,
+    traction: 0,
+    moat: 0
+  });
+
+  const updateFactor = (key: keyof typeof factors, value: number) => {
+    setFactors(prev => ({ ...prev, [key]: value }));
+  };
+
+  const results = useMemo(() => {
+    // Base value can be around 5Cr for a "standard" idea/start
+    const baseValue = 50000000;
+
+    // Each point in factors (0-10) adds value
+    // Max additional value per category = 4Cr (so max val ~25Cr for perfect score)
+    const valuePerPoint = 4000000;
+
+    const addedValue = Object.values(factors).reduce((sum, val) => sum + (val * valuePerPoint), 0);
+    const estimatedValuation = baseValue + addedValue;
+
+    return {
+      estimatedValuation,
+      breakdown: {
+        base: baseValue,
+        team: factors.team * valuePerPoint,
+        market: factors.market * valuePerPoint,
+        product: factors.product * valuePerPoint,
+        traction: factors.traction * valuePerPoint,
+        moat: factors.moat * valuePerPoint
+      }
+    };
+  }, [factors]);
+
+  return (
+    <div className="bg-card rounded-xl border border-border p-6">
+      <h3 className="font-semibold text-foreground mb-6">Pre-Seed / Zero Revenue Valuation</h3>
+      <div className="mb-6 bg-secondary/50 p-4 rounded-lg text-sm text-muted-foreground">
+        Based on the Berkus Method approximation. Rate each factor from 0 (Non-existent) to 10 (World Class).
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-6">
+          {[
+            { key: "team", label: "Founding Team", desc: "Experience, technical skills, domain expertise" },
+            { key: "market", label: "Market Opportunity", desc: "TAM size, growth rate, timing" },
+            { key: "product", label: "Product Status", desc: "Idea -> Prototype -> MVP -> Live" },
+            { key: "traction", label: "Traction / Validation", desc: "Waitlist, pilots, user interviews, LOIs" },
+            { key: "moat", label: "Moat / IP", desc: "Patents, network effects, unique access" }
+          ].map((item) => (
+            <div key={item.key}>
+              <div className="flex justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-foreground">{item.label}</label>
+                  <InfoTooltip content={item.desc} />
+                </div>
+                <span className="text-sm font-bold text-primary">{factors[item.key as keyof typeof factors]}/10</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="10"
+                step="1"
+                value={factors[item.key as keyof typeof factors]}
+                onChange={(e) => updateFactor(item.key as keyof typeof factors, Number(e.target.value))}
+                className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+              <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-4">
+          <div className="p-6 bg-primary/5 rounded-lg border border-primary/10">
+            <div className="text-sm text-muted-foreground mb-2">Estimated Pre-Seed Valuation</div>
+            <div className="text-3xl font-display text-primary">
+              {formatINR(results.estimatedValuation, true)}
+            </div>
+            <div className="text-xs text-muted-foreground mt-2">
+              Note: This is a rough estimation. Actual valuation depends heavily on investor conviction and negotiation.
+            </div>
+          </div>
+
+          <div className="p-4 bg-secondary rounded-lg">
+            <h4 className="font-medium text-foreground mb-3 text-sm">Value Drivers</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Base Value</span>
+                <span>{formatINR(results.breakdown.base, true)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Team Premium</span>
+                <span className="text-green-600">+{formatINR(results.breakdown.team, true)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Market Premium</span>
+                <span className="text-green-600">+{formatINR(results.breakdown.market, true)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Product Premium</span>
+                <span className="text-green-600">+{formatINR(results.breakdown.product, true)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Traction Premium</span>
+                <span className="text-green-600">+{formatINR(results.breakdown.traction, true)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PostMoneyDilutionCalculator() {
+  const [preMoney, setPreMoney] = useState(400000000); // 40 Cr
+  const [investment, setInvestment] = useState(100000000); // 10 Cr
+  const [esopPool, setEsopPool] = useState(10); // 10% post-money pool
+
+  const results = useMemo(() => {
+    // Standard "Post-Money Option Pool" calculation:
+    // PostMoney = PreMoney + Investment
+    // But typically Option Pool is carved out of the Pre-Money in the term sheet math relative to Post-Money
+    // Post Money = Investment / Stake Sold?
+
+    // Simpler modern SAFE/Priced Round view:
+    // Post-Money Valuation = Pre-Money Valuation + Investment
+    const postMoney = preMoney + investment;
+
+    // Investor Ownership = Investment / Post-Money
+    const investorOwnership = investment / postMoney;
+
+    // ESOP is usually fixed as a % of Post-Money. 
+    // This effectively dilutes existing shareholders (Founders).
+    const esopOwnership = esopPool / 100;
+
+    // Founders/Existing = 100% - Investor - ESOP
+    const founderOwnership = 1 - investorOwnership - esopOwnership;
+
+    return {
+      postMoney,
+      investorOwnership: investorOwnership * 100,
+      founderOwnership: founderOwnership * 100,
+      esopOwnership: esopOwnership * 100,
+      effectivePreMoney: postMoney * (1 - investorOwnership), // Check math
+    };
+  }, [preMoney, investment, esopPool]);
+
+  return (
+    <div className="bg-card rounded-xl border border-border p-6">
+      <h3 className="font-semibold text-foreground mb-6">Post-Money & Dilution Calculator</h3>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-6">
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
+              Pre-Money Valuation: {formatINR(preMoney, true)}
+              <InfoTooltip content="Valuation of the company before the new investment." />
+            </label>
+            <input
+              type="range"
+              min="10000000"
+              max="1000000000"
+              step="10000000"
+              value={preMoney}
+              onChange={(e) => setPreMoney(Number(e.target.value))}
+              className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+            />
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
+              Investment Amount: {formatINR(investment, true)}
+              <InfoTooltip content="Total cash being raised in this round." />
+            </label>
+            <input
+              type="range"
+              min="5000000"
+              max="500000000"
+              step="5000000"
+              value={investment}
+              onChange={(e) => setInvestment(Number(e.target.value))}
+              className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+            />
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
+              Target Post-Money Option Pool: {esopPool}%
+              <InfoTooltip content="Equity set aside for employees, calculated on post-money basis." />
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="25"
+              step="0.5"
+              value={esopPool}
+              onChange={(e) => setEsopPool(Number(e.target.value))}
+              className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+            />
+            <div className="text-xs text-muted-foreground mt-1">Creating/expanding pool dilutes existing shareholders</div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="p-6 bg-secondary/30 rounded-lg">
+            <div className="text-sm text-muted-foreground mb-1">Post-Money Valuation</div>
+            <div className="text-3xl font-display text-foreground">{formatINR(results.postMoney, true)}</div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-primary" />
+                <span className="text-sm font-medium">Founders / Existing</span>
+              </div>
+              <span className="font-mono font-medium">{results.founderOwnership.toFixed(2)}%</span>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-chart-2" />
+                <span className="text-sm font-medium">Investors</span>
+              </div>
+              <span className="font-mono font-medium">{results.investorOwnership.toFixed(2)}%</span>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-chart-3" />
+                <span className="text-sm font-medium">Option Pool</span>
+              </div>
+              <span className="font-mono font-medium">{results.esopOwnership.toFixed(2)}%</span>
+            </div>
+          </div>
+
+          <div className="h-4 w-full bg-secondary rounded-full overflow-hidden flex">
+            <div style={{ width: `${results.founderOwnership}%` }} className="h-full bg-primary" />
+            <div style={{ width: `${results.investorOwnership}%` }} className="h-full bg-chart-2" />
+            <div style={{ width: `${results.esopOwnership}%` }} className="h-full bg-chart-3" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CalculatorsPage() {
   return (
     <HandbookLayout currentSection="calculators">
@@ -1307,13 +1635,13 @@ export default function CalculatorsPage() {
             Interactive Calculators
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Use these calculators to model your startup&apos;s financials and plan your 
+            Use these calculators to model your startup&apos;s financials and plan your
             growth trajectory. All values are in Indian Rupees (₹).
           </p>
         </header>
 
         <Callout type="info" title="How to Use These Tools">
-          These calculators provide estimates based on simplified models and 2025 Indian SaaS benchmarks. 
+          These calculators provide estimates based on simplified models and 2025 Indian SaaS benchmarks.
           Real-world scenarios may vary based on your GTM (domestic vs US), seasonality, and market conditions.
         </Callout>
 
@@ -1325,7 +1653,7 @@ export default function CalculatorsPage() {
               <PricingTierCalculator />
             </div>
           </div>
-          
+
           <div>
             <h2 className="font-display text-2xl text-foreground mb-4">Unit Economics</h2>
             <div className="space-y-6">
@@ -1334,7 +1662,7 @@ export default function CalculatorsPage() {
               <BurnMultipleCalculator />
             </div>
           </div>
-          
+
           <div>
             <h2 className="font-display text-2xl text-foreground mb-4">Growth & Projections</h2>
             <div className="space-y-6">
@@ -1342,12 +1670,14 @@ export default function CalculatorsPage() {
               <RunwayCalculator />
             </div>
           </div>
-          
+
           <div>
             <h2 className="font-display text-2xl text-foreground mb-4">Fundraising</h2>
             <div className="space-y-6">
               <ValuationCalculator />
+              <PreSeedValuationCalculator />
               <FundraisingCalculator />
+              <PostMoneyDilutionCalculator />
             </div>
           </div>
         </section>

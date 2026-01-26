@@ -54,6 +54,7 @@ const navigationPhases = [
     icon: "◇",
     sections: [
       { id: "operations", title: "Operations & Tech", href: "/operations" },
+      { id: "equity-split", title: "Founder & Team Equity", href: "/equity-split" },
       { id: "compliance", title: "Legal & Compliance", href: "/compliance" },
     ]
   },
@@ -62,6 +63,7 @@ const navigationPhases = [
     icon: "≡",
     sections: [
       { id: "glossary", title: "Glossary", href: "/glossary" },
+      { id: "resources", title: "Templates & Resources", href: "/resources" },
     ]
   },
 ];
@@ -85,7 +87,7 @@ export function Navigation({ currentSection }: { currentSection: string }) {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "fixed top-4 left-4 z-50 lg:hidden bg-sidebar/75 border border-sidebar-border rounded-lg p-2.5 shadow-lg transition-all duration-200",
-          isOpen && "bg-sidebar-accent/75"
+          isOpen && "hidden"
         )}
         aria-label="Toggle navigation"
       >
@@ -125,63 +127,63 @@ export function Navigation({ currentSection }: { currentSection: string }) {
           </Link>
         </div>
 
-        <div className="relative p-4 overflow-y-auto h-[calc(100vh-100px)] scrollbar-thin">
-            {navigationPhases.map((phase, phaseIdx) => {
-              const hasActiveSection = phase.sections.some(s => s.id === currentSection);
-              
-              return (
-                <div 
-                  key={phase.phase} 
+        <div className="relative p-4 overflow-y-auto h-[calc(100vh-100px)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {navigationPhases.map((phase, phaseIdx) => {
+            const hasActiveSection = phase.sections.some(s => s.id === currentSection);
+
+            return (
+              <div
+                key={phase.phase}
+                className={cn(
+                  phaseIdx > 0 && "mt-2",
+                  "transition-all duration-300",
+                  mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                )}
+                style={{ transitionDelay: `${phaseIdx * 50}ms` }}
+              >
+                <div
                   className={cn(
-                    phaseIdx > 0 && "mt-2",
-                    "transition-all duration-300",
-                    mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                    "flex items-center gap-2 px-3 py-2 text-left",
+                    hasActiveSection
+                      ? "text-sidebar-primary"
+                      : "text-sidebar-foreground/60"
                   )}
-                  style={{ transitionDelay: `${phaseIdx * 50}ms` }}
                 >
-                  <div
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-2 text-left",
-                      hasActiveSection 
-                        ? "text-sidebar-primary" 
-                        : "text-sidebar-foreground/60"
-                    )}
-                  >
-                    <span className="text-xs">
-                      {phase.icon}
-                    </span>
-                    <span className="flex-1 text-xs font-medium uppercase tracking-wider">
-                      {phase.phase}
-                    </span>
-                  </div>
-                  
-                  <div className="pl-4 mt-1 space-y-0.5 border-l border-sidebar-border/50 ml-4">
-                    {phase.sections.map((section) => {
-                      const isActive = currentSection === section.id;
-                      return (
-                        <Link
-                          key={section.id}
-                          href={section.href}
-                          onClick={() => setIsOpen(false)}
-                          className={cn(
-                            "flex items-center px-3 py-2 rounded-md text-sm transition-all duration-200 relative",
-                            isActive
-                              ? "text-sidebar-primary font-medium bg-sidebar-primary/10"
-                              : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/30"
-                          )}
-                        >
-                          {isActive && (
-                            <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(100%+0.5rem)] w-1.5 h-1.5 rounded-full bg-sidebar-primary" />
-                          )}
-                          {section.title}
-                        </Link>
-                      );
-                    })}
-                  </div>
+                  <span className="text-xs">
+                    {phase.icon}
+                  </span>
+                  <span className="flex-1 text-xs font-medium uppercase tracking-wider">
+                    {phase.phase}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+
+                <div className="pl-4 mt-1 space-y-0.5 border-l border-sidebar-border/50 ml-4">
+                  {phase.sections.map((section) => {
+                    const isActive = currentSection === section.id;
+                    return (
+                      <Link
+                        key={section.id}
+                        href={section.href}
+                        onClick={() => setIsOpen(false)}
+                        className={cn(
+                          "flex items-center px-3 py-2 rounded-md text-sm transition-all duration-200 relative",
+                          isActive
+                            ? "text-sidebar-primary font-medium bg-sidebar-primary/10"
+                            : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/30"
+                        )}
+                      >
+                        {isActive && (
+                          <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(100%+0.5rem)] w-1.5 h-1.5 rounded-full bg-sidebar-primary" />
+                        )}
+                        {section.title}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
 
       </nav>
