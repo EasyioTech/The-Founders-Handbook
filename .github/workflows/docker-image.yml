@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Image CI/CD
 
 on:
   push:
@@ -9,10 +9,66 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/founders-handbook:latest
+        cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/founders-handbook:buildcache
+        cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/founders-handbook:buildcache,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST_IP }}
+        username: ${{ secrets.HOST_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Stop potential competing containers
+          docker stop founders-handbook || true
+          docker rm founders-handbook || true
+          
+          # Pull the new image
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/founders-handbook:latest
+          
+          # Run the new container
+          # We reproduce the docker-compose settings here for simplicity in a single script, 
+          # or we could copy the compose file. 
+          # given the single service nature, running directly is robust.
+          # However, let's try to use docker-compose if possible, but that requires copying the file.
+          # To keep it simple and self-contained, I will run docker run commands or use a temporary compose file.
+          
+          # Creating a temp docker-compose.yml on the server OR just running correct docker command.
+          # The user has a docker-compose.yml locally. It's better to use it.
+          # So we will SCP the docker-compose.yml first? 
+          # Or just stick to raw docker run command which matches the compose specs?
+          # Let's use raw docker run for less dependencies on file transfer.
+          
+          docker run -d \
+            --name founders-handbook \
+            --restart unless-stopped \
+            -p 5678:3000 \
+            -e NODE_ENV=production \
+            -e NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL || 'http://72.61.243.152:5678' }} \
+            ${{ secrets.DOCKER_HUB_USERNAME }}/founders-handbook:latest
+            
+          # Prune unused images to save space
+          docker image prune -f
