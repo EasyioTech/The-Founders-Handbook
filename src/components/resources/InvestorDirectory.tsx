@@ -88,11 +88,10 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
             // Search filter
             const searchLower = searchQuery.toLowerCase();
             const matchesSearch =
-                !searchQuery ||
-                inv.name?.toLowerCase().includes(searchLower) ||
-                inv.focus?.toLowerCase().includes(searchLower) ||
-                inv.description?.toLowerCase().includes(searchLower) ||
-                inv.city?.toLowerCase().includes(searchLower);
+                (inv.name || "").toLowerCase().includes(searchLower) ||
+                (inv.focus || "").toLowerCase().includes(searchLower) ||
+                (inv.description || "").toLowerCase().includes(searchLower) ||
+                (inv.city || "").toLowerCase().includes(searchLower);
 
             // Type filter
             const matchesType = typeFilter === "all" || inv.type === typeFilter;

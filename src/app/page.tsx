@@ -107,6 +107,13 @@ const phases = [
         description: "Problem validation, customer discovery, MVP development, and achieving product-market fit",
         topics: ["Problem validation", "Customer discovery", "MVP development", "Product-market fit"],
       },
+      {
+        id: "principles",
+        title: "Founding Principles",
+        href: "/resources/principles",
+        description: "Mental models and operating principles for founders",
+        topics: ["First principles", "Bias for action", "Leverage"],
+      },
     ]
   },
   {
@@ -207,6 +214,13 @@ const phases = [
         href: "/board-management",
         description: "Working effectively with your board of directors",
         topics: ["Board composition", "Meeting cadence", "Governance"],
+      },
+      {
+        id: "esops",
+        title: "ESOP Deep Dive",
+        href: "/resources/esops",
+        description: "Comprehensive guide to Employee Stock Ownership Plans",
+        topics: ["Pool size", "Vesting schedules", "Taxation"],
       },
     ]
   },
