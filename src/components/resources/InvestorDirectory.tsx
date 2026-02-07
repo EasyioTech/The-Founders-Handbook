@@ -15,6 +15,9 @@ import { Badge } from "@/components/ui/badge";
 
 export interface Investor {
     name: string;
+    "first name"?: string;
+    "last name"?: string;
+    title?: string;
     type?: string;
     geography?: string;
     source_geography?: string;
@@ -22,12 +25,20 @@ export interface Investor {
     stage?: string;
     focus?: string;
     ticket_size?: string;
+    "ticket size"?: string;
     email?: string;
+    phone?: string;
     linkedin?: string;
+    "personal linkedin url"?: string;
+    "company linkedin url"?: string;
     website?: string;
+    "twitter url"?: string;
     description?: string;
     portfolio?: string;
     source?: string;
+    "company address"?: string;
+    "company country"?: string;
+    contact_person?: string;
 }
 
 interface InvestorDirectoryProps {
@@ -317,9 +328,9 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
                                                     <Mail className="w-4 h-4" />
                                                 </a>
                                             )}
-                                            {investor.linkedin && (
+                                            {(investor.linkedin || investor["personal linkedin url"]) && (
                                                 <a
-                                                    href={investor.linkedin}
+                                                    href={investor.linkedin || investor["personal linkedin url"]}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-primary hover:text-primary/80"
@@ -381,7 +392,7 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
                             )}
                         </div>
 
-                        {(investor.email || investor.linkedin || investor.website) && (
+                        {(investor.email || investor["personal linkedin url"] || investor.website) && (
                             <div className="flex items-center gap-3 mt-4 pt-3 border-t border-border">
                                 {investor.email && (
                                     <a
@@ -392,9 +403,9 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
                                         Email
                                     </a>
                                 )}
-                                {investor.linkedin && (
+                                {(investor.linkedin || investor["personal linkedin url"]) && (
                                     <a
-                                        href={investor.linkedin}
+                                        href={investor.linkedin || investor["personal linkedin url"]}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-primary hover:text-primary/80 text-sm flex items-center gap-1"

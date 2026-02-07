@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { HandbookLayout } from "@/components/handbook/HandbookLayout";
 import { Download, FileText, ArrowRight, Eye, Copy, Check, Building2 } from "lucide-react";
-import { InvestorDirectory } from "@/components/resources/InvestorDirectory";
-import { mockInvestors } from "@/lib/mockInvestors";
+import { InvestorDirectory, Investor } from "@/components/resources/InvestorDirectory";
+import investorsData from "@/../../public/data/investors.json";
 import {
     Dialog,
     DialogContent,
@@ -149,8 +149,8 @@ export default function ResourcesPage() {
                     <button
                         onClick={() => setActiveTab("templates")}
                         className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors relative ${activeTab === "templates"
-                                ? "text-primary"
-                                : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
                         <FileText className="w-4 h-4" />
@@ -162,8 +162,8 @@ export default function ResourcesPage() {
                     <button
                         onClick={() => setActiveTab("investors")}
                         className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors relative ${activeTab === "investors"
-                                ? "text-primary"
-                                : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground"
                             }`}
                     >
                         <Building2 className="w-4 h-4" />
@@ -233,7 +233,7 @@ export default function ResourcesPage() {
 
                 {/* Investor Directory Tab */}
                 {activeTab === "investors" && (
-                    <InvestorDirectory investors={mockInvestors} />
+                    <InvestorDirectory investors={investorsData as Investor[]} />
                 )}
 
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>

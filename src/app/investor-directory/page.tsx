@@ -1,8 +1,8 @@
 "use client";
 
 import { HandbookLayout } from "@/components/handbook/HandbookLayout";
-import { InvestorDirectory } from "@/components/resources/InvestorDirectory";
-import { mockInvestors } from "@/lib/mockInvestors";
+import { InvestorDirectory, Investor } from "@/components/resources/InvestorDirectory";
+import investorsData from "@/../../public/data/investors.json";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -45,7 +45,7 @@ export default function InvestorDirectoryPage() {
                 </div>
 
                 {/* Directory Component */}
-                <InvestorDirectory investors={mockInvestors} />
+                <InvestorDirectory investors={investorsData as Investor[]} />
 
                 {/* Tips Section */}
                 <section className="bg-secondary/30 rounded-2xl p-8 border border-border">
