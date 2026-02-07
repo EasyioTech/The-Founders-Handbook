@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Filter, Download, ExternalLink, Mail, Linkedin, Eye } from "lucide-react";
+import { Search, Filter, Download, ExternalLink, Mail, Linkedin, ChevronDown, ChevronUp, Globe, MapPin, Building, Banknote, Target } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
     Select,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export interface Investor {
     name: string;
@@ -41,8 +42,6 @@ export interface Investor {
     contact_person?: string;
 }
 
-import { InvestorDetailModal } from "./InvestorDetailModal";
-
 interface InvestorDirectoryProps {
     investors: Investor[];
 }
@@ -54,12 +53,13 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
     const [stageFilter, setStageFilter] = useState<string>("all");
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(25);
-    const [selectedInvestor, setSelectedInvestor] = useState<Investor | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleViewDetails = (investor: Investor) => {
-        setSelectedInvestor(investor);
-        setIsModalOpen(true);
+    // Changing from selectedInvestor (modal) to expandedId (inline)
+    // We'll use the investor's index in the filtered list or name as ID since there's no unique ID
+    const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+    const toggleExpand = (index: number) => {
+        setExpandedIndex(expandedIndex === index ? null : index);
     };
 
     // Extract unique filter values
@@ -116,9 +116,10 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
         currentPage * rowsPerPage
     );
 
-    // Reset to page 1 when filters change
+    // Reset to page 1 and close expanded when filters change
     useMemo(() => {
         setCurrentPage(1);
+        setExpandedIndex(null);
     }, [searchQuery, typeFilter, geographyFilter, stageFilter, rowsPerPage]);
 
     // Export to CSV
@@ -155,6 +156,7 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
         setGeographyFilter("all");
         setStageFilter("all");
         setCurrentPage(1);
+        setExpandedIndex(null);
     };
 
     const hasActiveFilters = searchQuery || typeFilter !== "all" || geographyFilter !== "all" || stageFilter !== "all";
@@ -268,76 +270,176 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
             )}
 
             {/* Table - Desktop */}
-            <div className="hidden md:block border border-border rounded-lg overflow-hidden">
+            <div className="hidden md:block border border-border rounded-lg overflow-hidden bg-card">
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-muted/50">
+                        <thead className="bg-muted/50 border-b border-border">
                             <tr>
-                                <th className="text-left p-3 text-sm font-medium text-muted-foreground">
+                                <th className="text-left p-4 text-sm font-medium text-muted-foreground w-[30%]">
                                     Name
                                 </th>
-                                <th className="text-left p-3 text-sm font-medium text-muted-foreground">
+                                <th className="text-left p-4 text-sm font-medium text-muted-foreground w-[15%]">
                                     Type
                                 </th>
-                                <th className="text-left p-3 text-sm font-medium text-muted-foreground">
+                                <th className="text-left p-4 text-sm font-medium text-muted-foreground w-[15%]">
                                     Geography
                                 </th>
-                                <th className="text-left p-3 text-sm font-medium text-muted-foreground">
+                                <th className="text-left p-4 text-sm font-medium text-muted-foreground w-[20%]">
                                     Focus
                                 </th>
-                                <th className="text-left p-3 text-sm font-medium text-muted-foreground">
+                                <th className="text-left p-4 text-sm font-medium text-muted-foreground w-[15%]">
                                     Stage
                                 </th>
-                                <th className="text-left p-3 text-sm font-medium text-muted-foreground">
-                                    View
+                                <th className="text-left p-4 text-sm font-medium text-muted-foreground w-[5%]">
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {paginatedInvestors.map((investor, idx) => (
-                                <tr
-                                    key={idx}
-                                    className="border-t border-border hover:bg-muted/30 transition-colors"
-                                >
-                                    <td className="p-3">
-                                        <div className="font-medium text-foreground">
-                                            {investor.name}
-                                        </div>
-                                        {investor.city && (
-                                            <div className="text-xs text-muted-foreground">
-                                                {investor.city}
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td className="p-3">
-                                        {investor.type && (
-                                            <Badge variant="outline" className="text-xs">
-                                                {investor.type}
-                                            </Badge>
-                                        )}
-                                    </td>
-                                    <td className="p-3 text-sm text-muted-foreground">
-                                        {investor.source_geography || investor.geography || "-"}
-                                    </td>
-                                    <td className="p-3 text-sm text-muted-foreground max-w-xs truncate">
-                                        {investor.focus || "-"}
-                                    </td>
-                                    <td className="p-3 text-sm text-muted-foreground">
-                                        {investor.stage || "-"}
-                                    </td>
-                                    <td className="p-3">
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
-                                            onClick={() => handleViewDetails(investor)}
+                            {paginatedInvestors.map((investor, idx) => {
+                                const isExpanded = expandedIndex === idx;
+                                return (
+                                    <>
+                                        <tr
+                                            key={idx}
+                                            onClick={() => toggleExpand(idx)}
+                                            className={cn(
+                                                "border-b border-border/50 transition-colors cursor-pointer",
+                                                isExpanded ? "bg-muted/30" : "hover:bg-muted/30"
+                                            )}
                                         >
-                                            <Eye className="w-4 h-4" />
-                                            <span className="sr-only">View Details</span>
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
+                                            <td className="p-4">
+                                                <div className="font-medium text-foreground">
+                                                    {investor.name}
+                                                </div>
+                                                {investor.city && (
+                                                    <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                                                        <MapPin className="w-3 h-3" /> {investor.city}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td className="p-4">
+                                                {investor.type && (
+                                                    <Badge variant="outline" className="text-xs font-normal">
+                                                        {investor.type}
+                                                    </Badge>
+                                                )}
+                                            </td>
+                                            <td className="p-4 text-sm text-muted-foreground">
+                                                {investor.source_geography || investor.geography || "-"}
+                                            </td>
+                                            <td className="p-4 text-sm text-muted-foreground">
+                                                <div className="truncate max-w-[200px]" title={investor.focus}>
+                                                    {investor.focus || "-"}
+                                                </div>
+                                            </td>
+                                            <td className="p-4 text-sm text-muted-foreground">
+                                                {investor.stage || "-"}
+                                            </td>
+                                            <td className="p-4 text-muted-foreground">
+                                                {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            </td>
+                                        </tr>
+                                        {/* Expanded Content */}
+                                        {isExpanded && (
+                                            <tr className="bg-muted/10 border-b border-border">
+                                                <td colSpan={6} className="p-6 animate-in fade-in zoom-in-95 duration-200">
+                                                    <div className="grid gap-6 md:grid-cols-2">
+                                                        <div className="space-y-4">
+                                                            {investor.description && (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium text-foreground mb-1">Description</h4>
+                                                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                                                        {investor.description}
+                                                                    </p>
+                                                                </div>
+                                                            )}
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium text-foreground mb-1 flex items-center gap-2">
+                                                                        <Banknote className="w-3.5 h-3.5" /> Ticket Size
+                                                                    </h4>
+                                                                    <p className="text-sm text-muted-foreground">
+                                                                        {investor["ticket size"] || investor.ticket_size || "-"}
+                                                                    </p>
+                                                                </div>
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium text-foreground mb-1 flex items-center gap-2">
+                                                                        <Target className="w-3.5 h-3.5" /> Focus
+                                                                    </h4>
+                                                                    <p className="text-sm text-muted-foreground">
+                                                                        {investor.focus || "-"}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            {investor.portfolio && (
+                                                                <div>
+                                                                    <h4 className="text-sm font-medium text-foreground mb-1 flex items-center gap-2">
+                                                                        <Building className="w-3.5 h-3.5" /> Portfolio Ex.
+                                                                    </h4>
+                                                                    <p className="text-sm text-muted-foreground">
+                                                                        {investor.portfolio}
+                                                                    </p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-4 md:border-l md:border-border md:pl-6">
+                                                            <div>
+                                                                <h4 className="text-sm font-medium text-foreground mb-2">Details</h4>
+                                                                <dl className="grid grid-cols-1 gap-y-2 text-sm">
+                                                                    <div className="flex justify-between">
+                                                                        <dt className="text-muted-foreground">Type</dt>
+                                                                        <dd className="font-medium">{investor.type || "-"}</dd>
+                                                                    </div>
+                                                                    <div className="flex justify-between">
+                                                                        <dt className="text-muted-foreground">Stage</dt>
+                                                                        <dd className="font-medium">{investor.stage || "-"}</dd>
+                                                                    </div>
+                                                                    <div className="flex justify-between">
+                                                                        <dt className="text-muted-foreground">Location</dt>
+                                                                        <dd className="font-medium">{investor.source_geography || investor.geography || "-"} {investor.city ? `(${investor.city})` : ""}</dd>
+                                                                    </div>
+                                                                </dl>
+                                                            </div>
+
+                                                            <div className="space-y-3 pt-2">
+                                                                {investor.website && (
+                                                                    <a href={investor.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline">
+                                                                        <Globe className="w-4 h-4" />
+                                                                        {investor.website.replace(/^https?:\/\//, '')}
+                                                                        <ExternalLink className="w-3 h-3 ml-auto" />
+                                                                    </a>
+                                                                )}
+                                                                {investor.linkedin && (
+                                                                    <a href={investor.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+                                                                        <Linkedin className="w-4 h-4" />
+                                                                        Company LinkedIn
+                                                                        <ExternalLink className="w-3 h-3 ml-auto" />
+                                                                    </a>
+                                                                )}
+                                                                {(investor["personal linkedin url"] || investor["company linkedin url"]) && (
+                                                                    <a href={investor["personal linkedin url"] || investor["company linkedin url"]} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+                                                                        <Linkedin className="w-4 h-4" />
+                                                                        {investor["personal linkedin url"] ? "Personal LinkedIn" : "Company LinkedIn"}
+                                                                        <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
+                                                                    </a>
+                                                                )}
+                                                                {investor.email && (
+                                                                    <a href={`mailto:${investor.email}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+                                                                        <Mail className="w-4 h-4" />
+                                                                        {investor.email}
+                                                                        <span className="text-xs text-muted-foreground ml-auto opacity-50">Email</span>
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -345,52 +447,106 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
 
             {/* Cards - Mobile */}
             <div className="md:hidden space-y-3">
-                {paginatedInvestors.map((investor, idx) => (
-                    <div
-                        key={idx}
-                        className="border border-border rounded-lg p-4 bg-card hover:shadow-md transition-shadow"
-                    >
-                        <div className="flex items-start justify-between gap-2 mb-3">
-                            <h3 className="font-semibold text-foreground">{investor.name}</h3>
-                            {investor.type && (
-                                <Badge variant="outline" className="text-xs">
-                                    {investor.type}
-                                </Badge>
+                {paginatedInvestors.map((investor, idx) => {
+                    const isExpanded = expandedIndex === idx;
+                    return (
+                        <div
+                            key={idx}
+                            className={cn(
+                                "border border-border rounded-lg bg-card overflow-hidden transition-all",
+                                isExpanded ? "ring-1 ring-primary/20" : ""
                             )}
-                        </div>
-
-                        <div className="space-y-2 text-sm">
-                            {(investor.source_geography || investor.geography) && (
-                                <div className="text-muted-foreground">
-                                    📍 {investor.source_geography || investor.geography}
-                                    {investor.city && ` • ${investor.city}`}
-                                </div>
-                            )}
-                            {investor.focus && (
-                                <div className="text-muted-foreground">
-                                    🎯 {investor.focus}
-                                </div>
-                            )}
-                            {investor.stage && (
-                                <div className="text-muted-foreground">
-                                    💼 {investor.stage}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="flex items-center justify-between pt-3 border-t border-border mt-3">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-full gap-2"
-                                onClick={() => handleViewDetails(investor)}
+                        >
+                            {/* Card Header (Always Visible) */}
+                            <div
+                                className="p-4 cursor-pointer"
+                                onClick={() => toggleExpand(idx)}
                             >
-                                <Eye className="w-4 h-4" />
-                                View Details
-                            </Button>
+                                <div className="flex items-start justify-between gap-3 mb-3">
+                                    <div>
+                                        <h3 className="font-semibold text-foreground">{investor.name}</h3>
+                                        <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                                            <MapPin className="w-3 h-3" />
+                                            {investor.city || investor.source_geography || investor.geography || "Remote"}
+                                        </div>
+                                    </div>
+                                    {investor.type && (
+                                        <Badge variant="outline" className="text-xs shrink-0">
+                                            {investor.type}
+                                        </Badge>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2 text-sm">
+                                    {investor.focus && (
+                                        <div className="text-muted-foreground line-clamp-1">
+                                            🎯 {investor.focus}
+                                        </div>
+                                    )}
+                                    {investor.stage && (
+                                        <div className="text-muted-foreground">
+                                            💼 {investor.stage}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center justify-center mt-3 pt-3 border-t border-border/50 text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                                    {isExpanded ? (
+                                        <span className="flex items-center gap-1">Less Info <ChevronUp className="w-3 h-3" /></span>
+                                    ) : (
+                                        <span className="flex items-center gap-1">More Info <ChevronDown className="w-3 h-3" /></span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Expanded Content */}
+                            {isExpanded && (
+                                <div className="px-4 pb-4 pt-0 space-y-4 animate-in slide-in-from-top-2 duration-200">
+                                    {investor.description && (
+                                        <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-md">
+                                            {investor.description}
+                                        </p>
+                                    )}
+
+                                    <div className="grid grid-cols-2 gap-3 text-sm">
+                                        <div className="bg-secondary/20 p-2 rounded">
+                                            <span className="text-xs text-muted-foreground block mb-1">Ticket Size</span>
+                                            <span className="font-medium">{investor["ticket size"] || investor.ticket_size || "-"}</span>
+                                        </div>
+                                        <div className="bg-secondary/20 p-2 rounded">
+                                            <span className="text-xs text-muted-foreground block mb-1">Portfolio</span>
+                                            <span className="font-medium truncate block">{investor.portfolio || "-"}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        {investor.website && (
+                                            <a href={investor.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors">
+                                                <Globe className="w-4 h-4 text-primary" />
+                                                <span className="text-sm font-medium">Website</span>
+                                                <ExternalLink className="w-3 h-3 ml-auto text-muted-foreground" />
+                                            </a>
+                                        )}
+                                        {investor.email && (
+                                            <a href={`mailto:${investor.email}`} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors">
+                                                <Mail className="w-4 h-4 text-primary" />
+                                                <span className="text-sm font-medium">Email</span>
+                                                <ExternalLink className="w-3 h-3 ml-auto text-muted-foreground" />
+                                            </a>
+                                        )}
+                                        {(investor.linkedin || investor["personal linkedin url"] || investor["company linkedin url"]) && (
+                                            <a href={investor.linkedin || investor["personal linkedin url"] || investor["company linkedin url"]} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors">
+                                                <Linkedin className="w-4 h-4 text-primary" />
+                                                <span className="text-sm font-medium">LinkedIn</span>
+                                                <ExternalLink className="w-3 h-3 ml-auto text-muted-foreground" />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Pagination */}
@@ -452,12 +608,6 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
                     </Button>
                 </div>
             )}
-            {/* Investor Detail Modal */}
-            <InvestorDetailModal
-                investor={selectedInvestor}
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-            />
         </div>
     );
 }

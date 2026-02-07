@@ -18,6 +18,7 @@ const navigationPhases = [
     icon: "✦",
     sections: [
       { id: "idea-to-product", title: "Idea to Product", href: "/idea-to-product" },
+      { id: "principles", title: "Founding Principles", href: "/resources/principles" },
     ]
   },
   {
@@ -47,6 +48,7 @@ const navigationPhases = [
       { id: "team", title: "Team & Hiring", href: "/team" },
       { id: "management", title: "Leadership", href: "/management" },
       { id: "board-management", title: "Board Management", href: "/board-management" },
+      { id: "esops", title: "ESOP Deep Dive", href: "/resources/esops" },
     ]
   },
   {
