@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { HandbookLayout } from "@/components/handbook/HandbookLayout";
 import { Download, FileText, ArrowRight, Eye, Copy, Check, Building2, BookOpen, Mail } from "lucide-react";
 import { InvestorDirectory, Investor } from "@/components/resources/InvestorDirectory";
