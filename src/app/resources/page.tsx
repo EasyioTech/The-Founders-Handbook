@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { HandbookLayout } from "@/components/handbook/HandbookLayout";
-import { Download, FileText, ArrowRight, Eye, Copy, Check, Building2 } from "lucide-react";
+import { Download, FileText, ArrowRight, Eye, Copy, Check, Building2, BookOpen, Mail } from "lucide-react";
 import { InvestorDirectory, Investor } from "@/components/resources/InvestorDirectory";
 import investorsData from "@/../../public/data/investors.json";
 import {
@@ -226,6 +226,64 @@ export default function ResourcesPage() {
                                 <a href="#" className="flex items-center gap-2 text-primary font-medium hover:underline">
                                     Find a Startup Lawyer <ArrowRight className="w-4 h-4" />
                                 </a>
+                            </div>
+                        </section>
+
+                        {/* Fundraising Guides Section */}
+                        <section className="space-y-6">
+                            <div>
+                                <h2 className="text-2xl font-display text-foreground mb-2">
+                                    Fundraising Guides
+                                </h2>
+                                <p className="text-muted-foreground">
+                                    Comprehensive guides to help you navigate the fundraising journey.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <Link
+                                    href="/fundraising"
+                                    className="group relative bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/50 transition-all duration-300"
+                                >
+                                    <div className="absolute top-4 right-4 text-xs font-medium px-2 py-1 bg-primary/10 text-primary rounded">
+                                        8 Modules
+                                    </div>
+                                    <div className="mb-4">
+                                        <BookOpen className="w-10 h-10 text-primary" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                                        Complete Fundraising Guide
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                        From understanding the funding ecosystem to closing your first round.
+                                        Covers seed funding, Series A, investor types, pitching, and negotiations.
+                                    </p>
+                                    <div className="flex items-center gap-2 text-primary text-sm font-medium group-hover:gap-3 transition-all">
+                                        Read Guide <ArrowRight className="w-4 h-4" />
+                                    </div>
+                                </Link>
+
+                                <Link
+                                    href="/cold-outreach"
+                                    className="group relative bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/50 transition-all duration-300"
+                                >
+                                    <div className="absolute top-4 right-4 text-xs font-medium px-2 py-1 bg-primary/10 text-primary rounded">
+                                        6-Step Process
+                                    </div>
+                                    <div className="mb-4">
+                                        <Mail className="w-10 h-10 text-primary" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                                        Cold Outreach Guide
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                        Learn how to craft cold emails that get responses. Includes proven templates,
+                                        subject lines, and strategies used to raise millions.
+                                    </p>
+                                    <div className="flex items-center gap-2 text-primary text-sm font-medium group-hover:gap-3 transition-all">
+                                        Read Guide <ArrowRight className="w-4 h-4" />
+                                    </div>
+                                </Link>
                             </div>
                         </section>
                     </>

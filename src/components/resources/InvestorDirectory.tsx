@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Filter, Download, ExternalLink, Mail, Linkedin } from "lucide-react";
+import { Search, Filter, Download, ExternalLink, Mail, Linkedin, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
     Select,
@@ -41,6 +41,8 @@ export interface Investor {
     contact_person?: string;
 }
 
+import { InvestorDetailModal } from "./InvestorDetailModal";
+
 interface InvestorDirectoryProps {
     investors: Investor[];
 }
@@ -52,6 +54,13 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
     const [stageFilter, setStageFilter] = useState<string>("all");
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(25);
+    const [selectedInvestor, setSelectedInvestor] = useState<Investor | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleViewDetails = (investor: Investor) => {
+        setSelectedInvestor(investor);
+        setIsModalOpen(true);
+    };
 
     // Extract unique filter values
     const filterOptions = useMemo(() => {
@@ -281,7 +290,7 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
                                     Stage
                                 </th>
                                 <th className="text-left p-3 text-sm font-medium text-muted-foreground">
-                                    Contact
+                                    View
                                 </th>
                             </tr>
                         </thead>
@@ -318,37 +327,15 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
                                         {investor.stage || "-"}
                                     </td>
                                     <td className="p-3">
-                                        <div className="flex items-center gap-2">
-                                            {investor.email && (
-                                                <a
-                                                    href={`mailto:${investor.email}`}
-                                                    className="text-primary hover:text-primary/80"
-                                                    title={investor.email}
-                                                >
-                                                    <Mail className="w-4 h-4" />
-                                                </a>
-                                            )}
-                                            {(investor.linkedin || investor["personal linkedin url"]) && (
-                                                <a
-                                                    href={investor.linkedin || investor["personal linkedin url"]}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-primary hover:text-primary/80"
-                                                >
-                                                    <Linkedin className="w-4 h-4" />
-                                                </a>
-                                            )}
-                                            {investor.website && (
-                                                <a
-                                                    href={investor.website}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-primary hover:text-primary/80"
-                                                >
-                                                    <ExternalLink className="w-4 h-4" />
-                                                </a>
-                                            )}
-                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+                                            onClick={() => handleViewDetails(investor)}
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                            <span className="sr-only">View Details</span>
+                                        </Button>
                                     </td>
                                 </tr>
                             ))}
@@ -392,41 +379,17 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
                             )}
                         </div>
 
-                        {(investor.email || investor["personal linkedin url"] || investor.website) && (
-                            <div className="flex items-center gap-3 mt-4 pt-3 border-t border-border">
-                                {investor.email && (
-                                    <a
-                                        href={`mailto:${investor.email}`}
-                                        className="text-primary hover:text-primary/80 text-sm flex items-center gap-1"
-                                    >
-                                        <Mail className="w-4 h-4" />
-                                        Email
-                                    </a>
-                                )}
-                                {(investor.linkedin || investor["personal linkedin url"]) && (
-                                    <a
-                                        href={investor.linkedin || investor["personal linkedin url"]}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary hover:text-primary/80 text-sm flex items-center gap-1"
-                                    >
-                                        <Linkedin className="w-4 h-4" />
-                                        LinkedIn
-                                    </a>
-                                )}
-                                {investor.website && (
-                                    <a
-                                        href={investor.website}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary hover:text-primary/80 text-sm flex items-center gap-1"
-                                    >
-                                        <ExternalLink className="w-4 h-4" />
-                                        Website
-                                    </a>
-                                )}
-                            </div>
-                        )}
+                        <div className="flex items-center justify-between pt-3 border-t border-border mt-3">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full gap-2"
+                                onClick={() => handleViewDetails(investor)}
+                            >
+                                <Eye className="w-4 h-4" />
+                                View Details
+                            </Button>
+                        </div>
                     </div>
                 ))}
             </div>
@@ -490,6 +453,12 @@ export function InvestorDirectory({ investors }: InvestorDirectoryProps) {
                     </Button>
                 </div>
             )}
+            {/* Investor Detail Modal */}
+            <InvestorDetailModal
+                investor={selectedInvestor}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 }
