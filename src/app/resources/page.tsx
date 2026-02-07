@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { HandbookLayout } from "@/components/handbook/HandbookLayout";
-import { Download, FileText, ArrowRight, Eye, Copy, Check } from "lucide-react";
+import { Download, FileText, ArrowRight, Eye, Copy, Check, Building2 } from "lucide-react";
+import { InvestorDirectory } from "@/components/resources/InvestorDirectory";
+import { mockInvestors } from "@/lib/mockInvestors";
 import {
     Dialog,
     DialogContent,
@@ -86,6 +88,7 @@ const templates: DocTemplate[] = [
 ];
 
 export default function ResourcesPage() {
+    const [activeTab, setActiveTab] = useState<"templates" | "investors">("templates");
     const [isOpen, setIsOpen] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState<DocTemplate | null>(null);
     const [content, setContent] = useState("");
@@ -134,65 +137,104 @@ export default function ResourcesPage() {
                 <header className="space-y-4">
                     <div className="text-sm text-primary font-medium">Resources</div>
                     <h1 className="font-display text-4xl text-foreground">
-                        Document Templates
+                        Resources & Tools
                     </h1>
                     <p className="text-xl text-muted-foreground leading-relaxed">
-                        Essential legal, HR, and compliance templates for Indian startups.
-                        Standardized to save you legal fees in the early days.
+                        Essential templates, investor directory, and tools for Indian startups.
                     </p>
                 </header>
 
-                <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {templates.map((doc, i) => (
-                        <div key={i} className="group relative bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/50 transition-all duration-300">
-                            <div className="absolute top-4 right-4 text-xs font-medium px-2 py-1 bg-secondary rounded text-muted-foreground">
-                                {doc.type}
-                            </div>
+                {/* Tabs */}
+                <div className="flex gap-2 border-b border-border">
+                    <button
+                        onClick={() => setActiveTab("templates")}
+                        className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors relative ${activeTab === "templates"
+                                ? "text-primary"
+                                : "text-muted-foreground hover:text-foreground"
+                            }`}
+                    >
+                        <FileText className="w-4 h-4" />
+                        Document Templates
+                        {activeTab === "templates" && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                        )}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("investors")}
+                        className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors relative ${activeTab === "investors"
+                                ? "text-primary"
+                                : "text-muted-foreground hover:text-foreground"
+                            }`}
+                    >
+                        <Building2 className="w-4 h-4" />
+                        Investor Directory
+                        {activeTab === "investors" && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                        )}
+                    </button>
+                </div>
 
-                            <div className="mb-4">
-                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${doc.category === 'Legal' ? 'bg-blue-500/10 text-blue-600' :
-                                    doc.category === 'HR' ? 'bg-emerald-500/10 text-emerald-600' :
-                                        'bg-amber-500/10 text-amber-600'
-                                    }`}>
-                                    <FileText className="w-5 h-5" />
+                {/* Templates Tab */}
+                {activeTab === "templates" && (
+                    <>
+                        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {templates.map((doc, i) => (
+                                <div key={i} className="group relative bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/50 transition-all duration-300">
+                                    <div className="absolute top-4 right-4 text-xs font-medium px-2 py-1 bg-secondary rounded text-muted-foreground">
+                                        {doc.type}
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${doc.category === 'Legal' ? 'bg-blue-500/10 text-blue-600' :
+                                            doc.category === 'HR' ? 'bg-emerald-500/10 text-emerald-600' :
+                                                'bg-amber-500/10 text-amber-600'
+                                            }`}>
+                                            <FileText className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="font-semibold text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
+                                            {doc.title}
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground line-clamp-3">
+                                            {doc.description}
+                                        </p>
+                                    </div>
+
+                                    <div className="pt-4 border-t border-border flex items-center justify-between">
+                                        <span className="text-xs font-medium text-muted-foreground">{doc.category}</span>
+                                        <button
+                                            onClick={() => handlePreview(doc)}
+                                            className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                                        >
+                                            <Eye className="w-3.5 h-3.5" /> Preview & Download
+                                        </button>
+                                    </div>
                                 </div>
-                                <h3 className="font-semibold text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
-                                    {doc.title}
-                                </h3>
-                                <p className="text-sm text-muted-foreground line-clamp-3">
-                                    {doc.description}
-                                </p>
-                            </div>
+                            ))}
+                        </section>
 
-                            <div className="pt-4 border-t border-border flex items-center justify-between">
-                                <span className="text-xs font-medium text-muted-foreground">{doc.category}</span>
-                                <button
-                                    onClick={() => handlePreview(doc)}
-                                    className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                                >
-                                    <Eye className="w-3.5 h-3.5" /> Preview & Download
-                                </button>
+                        <section className="bg-secondary/30 rounded-2xl p-8 border border-border">
+                            <h2 className="text-2xl font-display text-foreground mb-4">Important Disclaimer</h2>
+                            <p className="text-muted-foreground mb-6">
+                                These templates are provided for informational purposes only and do not constitute legal advice.
+                                Indian laws (Companies Act 2013, Contract Act 1872) change frequently.
+                                Always have a qualified Company Secretary (CS) or Lawyer review final agreements before signing.
+                            </p>
+                            <div className="flex flex-wrap gap-4">
+                                <a href="#" className="flex items-center gap-2 text-primary font-medium hover:underline">
+                                    Read about MCA Compliance <ArrowRight className="w-4 h-4" />
+                                </a>
+                                <a href="#" className="flex items-center gap-2 text-primary font-medium hover:underline">
+                                    Find a Startup Lawyer <ArrowRight className="w-4 h-4" />
+                                </a>
                             </div>
-                        </div>
-                    ))}
-                </section>
+                        </section>
+                    </>
+                )}
 
-                <section className="bg-secondary/30 rounded-2xl p-8 border border-border">
-                    <h2 className="text-2xl font-display text-foreground mb-4">Important Disclaimer</h2>
-                    <p className="text-muted-foreground mb-6">
-                        These templates are provided for informational purposes only and do not constitute legal advice.
-                        Indian laws (Companies Act 2013, Contract Act 1872) change frequently.
-                        Always have a qualified Company Secretary (CS) or Lawyer review final agreements before signing.
-                    </p>
-                    <div className="flex flex-wrap gap-4">
-                        <a href="#" className="flex items-center gap-2 text-primary font-medium hover:underline">
-                            Read about MCA Compliance <ArrowRight className="w-4 h-4" />
-                        </a>
-                        <a href="#" className="flex items-center gap-2 text-primary font-medium hover:underline">
-                            Find a Startup Lawyer <ArrowRight className="w-4 h-4" />
-                        </a>
-                    </div>
-                </section>
+                {/* Investor Directory Tab */}
+                {activeTab === "investors" && (
+                    <InvestorDirectory investors={mockInvestors} />
+                )}
 
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
