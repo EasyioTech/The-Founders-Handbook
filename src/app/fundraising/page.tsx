@@ -1,4 +1,4 @@
-"use client";
+
 
 import { HandbookLayout } from "@/components/handbook/HandbookLayout";
 import Link from "next/link";
